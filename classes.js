@@ -15,9 +15,10 @@ class Warrior {
 }
 
 class Reward {
-    constructor (text, gold) {
+    constructor (text, gold, id) {
         this.text = text;
         this.gold = gold;
+        this.id = id;
     }
 }
 

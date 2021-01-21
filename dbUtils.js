@@ -16,6 +16,8 @@ let warrior;
 let quests = [];
 let attributes = [];
 let rewards = [];
+let goldRewards = [];
+let textRewards = [];
 let warriorQuests = [];
 
 // var questConverter = {
@@ -61,8 +63,15 @@ function populateData() {
     db.collection("rewards").get().then((querySnapshot) => {
         querySnapshot.forEach((reward) => {
             const r = reward.data();
-            rewards.push(new Reward(r.text, r.id))
+            rewards.push(new Reward(r.text, r.gold, reward.id));
+            if (r.gold) {
+                goldRewards.push(new Reward(r.text, r.gold, reward.id));
+            } else {
+                textRewards.push(new Reward(r.text, r.gold, reward.id));
+            }
         });
+        buildGoldRewards();
+        buildTextRewards();
     });
 }
 

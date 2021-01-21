@@ -35,6 +35,17 @@
 		<div id="quests"><div id="quest_label">Quests</div><div id="quest_list"></div></div>
 		<div id="attributes"><div id="attributes_label">Attributes</div><div id="attribute_list"></div></div>
 		<div id="bottom_bar"></div>
+		<div id="new_quest_form">
+			<form>
+				<input type="text" name="text" placeholder="Quest description" />
+				<input type="text" name="duration" placeholder="Duration" />
+				<select name="rewards" id="quest_gold_rewards_select">
+				</select>
+				<select name="rewards" id="quest_text_rewards_select">
+				</select>
+				<input type="submit" value="submit quest"/>
+			</form>
+		</div>
 		<audio loop autoplay id="background_music">
 		  <source src="song2.mp3" type="audio/mpeg">
 		  Your browser does not support the audio tag.
@@ -63,6 +74,22 @@
 					attributesHtml += a.toHTML();
 				});
 				document.getElementById('attribute_list').innerHTML = attributesHtml;
+			}
+
+			function buildGoldRewards () {
+				let rewardsHtml = `<option selected="true" disabled="disabled">Choose gold reward</option>`;
+				goldRewards.forEach(r => {
+					rewardsHtml += `<option value="${r.gold}">${r.gold} gold</option>`;
+				});
+				document.getElementById('quest_gold_rewards_select').innerHTML = rewardsHtml;
+			}
+
+			function buildTextRewards () {
+				let rewardsHtml = `<option selected="true" disabled="disabled">Choose text reward</option>`;
+				textRewards.forEach(r => {
+					rewardsHtml += `<option value="${r.text}">${r.text}</option>`;
+				});
+				document.getElementById('quest_text_rewards_select').innerHTML = rewardsHtml;
 			}
 
 			function seedDatabase () {
@@ -109,8 +136,9 @@
 
 			const music = document.getElementById("background_music");
 			document.addEventListener("click", function () {
-				music.play();
+				//music.play();
 			});
+
 
 			db.collection("quests").get().then((querySnapshot) => {
 				if (querySnapshot.size === 0) {
@@ -118,6 +146,28 @@
 					seedDatabase();
 				}
 			});
+
+			$('#quest_label').click(function () {
+
+			});
+
+			$('#new_quest_form form').submit(function(e) {
+				e.preventDefault();
+				const forms = $(this);
+				const text = forms[0][0].value;
+				const duration = forms[0][1].value;
+				const goldReward = forms[0][2].value;
+				const textReward = forms[0][3].value;
+				let questReward;
+				if (goldReward) {
+					questReward = new Reward(null, goldReward);
+				} else {
+					questReward = new Reward(textReward, null);
+				}
+				quest = new Quest(text, duration, [questReward], []);
+				console.log(quest);
+				db.collection("quests").add(JSON.parse(JSON.stringify(quest)));
+			})
 
 			var backgrounds = [
 				"back.jpg",
