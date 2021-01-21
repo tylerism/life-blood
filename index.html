@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="icon" type="image/png" href="/favicon.png"/>
+		<link rel="icon" type="image/png" href="https://example.com/favicon.png"/>
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.gstatic.com">
@@ -13,125 +15,23 @@
 		<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&display=swap" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+		<link href="style.css" rel="stylesheet">
 		<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
-		<style>
-			body {
-				background: url("backback.png");
-				background-size: cover;
-				background-repeat: no-repeat;
-			}
-			h1, h2, h3 {
-				margin: 0;
-				padding: 0;
-			}
-			#top_bar {
-				background: url("woodimage3.png");
-				position: fixed;
-				top: 0;
-				left: 0;
-				right: 0;
-				height:50px;
-				box-shadow: 0 0 3px 0 black;
-			}
-			#bottom_bar {
-				background: url("woodimage3.png");
-				position: fixed;
-				bottom: 0;
-				left: 0;
-				right: 0;
-				height:50px;
-				box-shadow: 0 0 3px 0 black;
-			}
-			.reward span, .duration span {
-				font-weight: bold;
-			}
-			.quest h2 {
-				font-family: 'Tangerine', cursive;
-				font-size: 36px;
-			}
-			#quest_label, #attributes_label {
-				font-family: 'Tangerine', cursive;
-				font-size: 48px;
-				color: #debd8c;
-				padding: 20px;
-			}
-			#quests {
-				position: fixed;
-				top: 50px;
-				bottom: 50px;
-				left: 20px;
-			}
-			#attributes {
-				position: fixed;
-				right: 0;
-				width: 400px;
-				top: 50px;
-				bottom: 100px;
-				color: #debd8c;
-			}
-			#attribute_list {
-				background: url("bookRed.png");
-				background-size: cover;
-				padding: 20px;
-			}
-			.attribute {
-				padding: 10px;
-			}
-			.attribute_text, .attribute_score {
-				display: inline-block;
-				width: 50%;
-			}
-			.attribute_score {
-				text-align: right;
-			}
-			.quest {
-				background-image: url("scroll.png");
-				background-color: black;
-				box-shadow: 2px 6px 9px 0px rgba(0, 0, 0, 0.4);
-				margin: 0 0 20px 0;
-				border-radius: 5px;
-				padding: 20px;
-				position: relative;
-			}
-			.quest button {
-				background: url("redArea.png");
-				background-size: cover;
-				position: absolute;
-				right: 10px;
-				bottom: 10px;
-				padding: 5px 10px;
-				color: #debd8c;
-				font-family: 'Tangerine', cursive;
-				border: none;
-				outline: none;
-				font-size: 20px;
-				cursor: pointer;
-				border-radius: 3px;
-			}
-			#quest_list {
-				position: fixed;
-				top: 135px;
-				bottom: 50px;
-				overflow-y: scroll;
-			}
-			.quest.active button {
-				background: black;
-				color: red;
-			}
-			.quest .cancel_quest {
-				display: none;
-			}
-			.quest.active .begin_quest {
-				display: none;
-			}
-			.quest.active .cancel_quest {
-				display: block;
-			}
+		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-firestore.js"></script>
+		<script src="dbUtils.js"></script>
+		<script src="classes.js"></script>
+		<script src="seedData.js"></script>
 
-		</style>
+		<script>
+			populateData();
+
+		</script>
+
 	</head>
 	<body>
 		<div id="top_bar"></div>
+		<div id="warrior_quests"><div id="warrior_quest_list"></div></div>
 		<div id="quests"><div id="quest_label">Quests</div><div id="quest_list"></div></div>
 		<div id="attributes"><div id="attributes_label">Attributes</div><div id="attribute_list"></div></div>
 		<div id="bottom_bar"></div>
@@ -140,165 +40,99 @@
 		  Your browser does not support the audio tag.
 		</audio>
 		<script>
-			class Person {
-				constructor (weight, money, name) {
-					this.weight = weight;
-					this.money = money;
-					this.name = name;
-				}
-			}
-			class Reward {
-				constructor (text) {
-					this.text = text;
-				}
-			}
-			class Quest {
-				constructor (text, duration, rewards) {
-					this.text = text;
-					this.duration = duration;
-					this.rewards = rewards;
-					this.active = false;
-					this.id = uuidv4();
-				}
-			}
-			class Attribute {
-				constructor (text, score) {
-					this.text = text;
-					this.score = score;
-				}
-			}
 
-			function uuidv4() {
-			  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-			    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-			    return v.toString(16);
-			  });
-			}
-
-			const person = new Person('220', '22000', 'Lord Pugh');
-
-			const attributes = [
-				new Attribute('Strength', 0),
-				new Attribute('Intelligence', 0),
-				new Attribute('Attractiveness', 0),
-				new Attribute('Kindness', 0),
-				new Attribute('Style', 0),
-				new Attribute('Happiness', 0),
-				new Attribute('Charisma', 0),
-				new Attribute('Endurance', 0),
-				new Attribute('Discipline', 0),
-				new Attribute('Generosity', 0),
-				new Attribute('Honesty', 0),
-				new Attribute('Hard Working', 0),
-				new Attribute('Vitality', 0),
-				new Attribute('Wealth', 0)
-			];
-			const rewards = [
-				new Reward('$25'),
-				new Reward('$50'),
-				new Reward('$100'),
-				new Reward('$1000'),
-				new Reward('Take a vacation'),
-				new Reward('Buy new warddrobe'),
-				new Reward('Invite friends over for dinner'),
-				new Reward('Order expensive fancy meal'),
-				new Reward('Join dating app'),
-				new Reward('A new plant')
-			];
-			const quests = [
-				new Quest('Make bed everyday', '10 days', [rewards[0]]),
-				new Quest('Make bed everyday', '1 month', [rewards[1]]),
-				new Quest('Ride bike around town lake', '10 days', [rewards[2]]),
-				new Quest('Ride bike around town lake', '1 month', [rewards[3]]),
-				new Quest('Sobriety', '10 days', [rewards[2]]),
-				new Quest('Sobriety', '1 month', [rewards[3]]),
-				new Quest('play pickeball', '10 days', [rewards[3]]),
-				new Quest('play pickeball', '5 weekends', [rewards[2]]),
-				new Quest('Staying at desk during work', '1 week', [rewards[2]]),
-				new Quest('Stay on top of laundry', '10 days', [rewards[2]]),
-				new Quest('Stay on top of laundry', '1 month', [rewards[3]]),
-				new Quest('Stay on top of dishes', '10 days', [rewards[2]]),
-				new Quest('Stay on top of dishes', '1 month', [rewards[3]]),
-				new Quest('Get out of home at least once a day', '10 days', [rewards[0]]),
-				new Quest('Get out of home at least once a day', '1 month', [rewards[2]]),
-				new Quest('Curling dumbell 50 times each arm', '10 days', [rewards[2]]),
-				new Quest('Curling dumbell 50 times each arm', '1 month', [rewards[3]]),
-				new Quest('Overhead press dumbell 50 times each arm', '10 days', [rewards[2]]),
-				new Quest('Overhead press dumbell 50 times each arm', '1 month', [rewards[3]]),
-				new Quest('Bench press dumbell 50 times each arm', '10 days', [rewards[2]]),
-				new Quest('Bench press dumbell 50 times each arm', '1 month', [rewards[3]]),
-				new Quest('60 pushups', 'Single sitting', [rewards[2]]),
-				new Quest('90 pushups', 'Single sitting', [rewards[3]]),
-				new Quest('60 pushups', 'Single sitting', [rewards[2]]),
-				new Quest('Invite friends over for dinner', 'Single sitting', [rewards[2]]),
-				new Quest('100 jumping jacks', 'Single sitting', [rewards[0]]),
-				new Quest('100 jumping jacks', '10 days', [rewards[2]]),
-				new Quest('Weigh 200lbs', 'Single sitting', [rewards[2]]),
-				new Quest('Weigh 185lbs', 'Single sitting', [rewards[3]]),
-				new Quest('Cleaning all trash away before bed', '1 month', [rewards[2], rewards[2]]),
-				new Quest('Cleaning all trash away before bed', '10 days', [rewards[1]]),
-				new Quest('Organizing an area of home', '10 days', [rewards[2]]),
-				new Quest('Organizing an area of home', '1 month', [rewards[3]]),
-				new Quest('Cleaning / vaccuming', '10 days', [rewards[2]]),
-				new Quest('Cleaning / vaccuming', '1 month', [rewards[3]]),
-				new Quest('Stretching', '10 days', [rewards[0]]),
-				new Quest('Stretching', '1 month', [rewards[1]]),
-				new Quest('Playing video games', '10 days', [rewards[1]]),
-				new Quest('At least 2 glasses of water', '10 days', [rewards[1]]),
-				new Quest('At least 2 glasses of water', '1 month', [rewards[2]]),
-				new Quest('Journaling', '10 days', [rewards[2]]),
-				new Quest('Journaling', '1 month', [rewards[3]]),
-				new Quest('Blogging', '10 days', [rewards[2]]),
-				new Quest('Blogging', '10 days', [rewards[3]]),
-				new Quest('Reading technical articles', '10 days', [rewards[2]]),
-				new Quest('Reading technical articles', '1 month', [rewards[3]]),
-			];
-
-			
-			
-			
 			function buildQuests () {
 				let questHtml = "";
 				quests.forEach(q => {
-					let rewardHtml = "";
-					q.rewards.forEach(r => {
-						rewardHtml += r.text;
-					});
-					questHtml += `<div class="quest${q.active ? ' active' : ''}" quest="${q.id}"><h2>${q.text}</h2><div class="duration"><span>Duration: </span> ${q.duration}</div><div class="reward"><span>Reward: </span>${rewardHtml}</div><button class="begin_quest">Begin</button><button class="cancel_quest">Cancel</button></div></div>`;
+					questHtml += q.toHTML();
 				});
 				document.getElementById('quest_list').innerHTML = questHtml;
+			}
+
+			function buildWarriorQuests () {
+				let questHtml = "";
+				warriorQuests.forEach(q => {
+					questHtml += q.toHTML();
+				});
+				document.getElementById('warrior_quest_list').innerHTML = questHtml;
 			}
 
 			function buildAttributes () {
 				let attributesHtml = "";
 				attributes.forEach(a => {
-					attributesHtml += `<div class="attribute"><div class="attribute_text">${a.text}</div><div class="attribute_score">${a.score}</div></div>`;
+					attributesHtml += a.toHTML();
 				});
 				document.getElementById('attribute_list').innerHTML = attributesHtml;
 			}
-			
-			buildQuests();
-			buildAttributes();
+
+			function seedDatabase () {
+				seedItems(seedQuests, "quests");
+				seedItems(seedRewards, "rewards");
+				seedItems(seedAttributes, "attributes");
+				seedItems(seedWarriors, "warriors");
+			}
+
+			function seedItems (items, collection) {
+				items.forEach(i => {
+					db.collection(collection).add(JSON.parse(JSON.stringify(i)))
+					.then(function(docRef) {
+						console.log("Document written with ID: ", docRef.id);
+					})
+					.catch(function(error) {
+						console.error("Error adding document: ", error);
+					});
+				});
+			}
 
 			$(document).on('click', '.begin_quest', function(){
 				const quest = quests.find(q => q.id === $(this).parent().attr('quest'));
-				quest.active = true;
-				buildQuests();
+				const warriorQuest = new WarriorQuest(warrior, quest, true, null, new Date());
+				const wq = JSON.parse(JSON.stringify(warriorQuest));
+				db.collection("warrior_quests").add(wq);
 			});
 
 			$(document).on('click', '.cancel_quest', function(){
-				const quest = quests.find(q => q.id === $(this).parent().attr('quest'));
-				quest.active = false;
-				buildQuests();
+				const quest = warriorQuests.find(q => q.id === $(this).parent().attr('quest'));
+				console.log(quest);
+				db.collection("warrior_quests").doc(quest.id).update({
+					completed: false,
+					active: false
+				})
+				.then(function() {
+					console.log("Document successfully updated!");
+				})
+				.catch(function(error) {
+					// The document probably doesn't exist.
+					console.error("Error updating document: ", error);
+				});
 			});
 
 			const music = document.getElementById("background_music");
 			document.addEventListener("click", function () {
 				music.play();
-			})
+			});
 
-			
-			
+			db.collection("quests").get().then((querySnapshot) => {
+				if (querySnapshot.size === 0) {
+					alert();
+					seedDatabase();
+				}
+			});
+
+			var backgrounds = [
+				"back.jpg",
+				"back2.jpg",
+				"back3.jpg",
+				"back4.jpg",
+				"back5.jpg",
+				"back6.jpg",
+				"back7.jpg",
+				"back8.jpg",
+				"backback.png",
+			];
+
+			var back = backgrounds[Math.floor(Math.random()*backgrounds.length)];
+			document.body.style.backgroundImage = `url("${back}")`;
 
 		</script>
 	</body>

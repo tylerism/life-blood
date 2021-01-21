@@ -1,0 +1,141 @@
+body {
+    background: url("backback.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+h1, h2, h3 {
+    margin: 0;
+    padding: 0;
+}
+#top_bar {
+    background: url("woodimage3.png");
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height:50px;
+    box-shadow: 0 0 3px 0 black;
+}
+#bottom_bar {
+    background: url("woodimage3.png");
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height:50px;
+    box-shadow: 0 0 3px 0 black;
+}
+.reward span, .duration span {
+    font-weight: bold;
+}
+.quest h2 {
+    font-family: 'Tangerine', cursive;
+    font-size: 36px;
+}
+#quest_label, #attributes_label {
+    font-family: 'Tangerine', cursive;
+    font-size: 48px;
+    color: #debd8c;
+    padding: 20px;
+}
+#quests {
+    position: fixed;
+    top: 50px;
+    bottom: 50px;
+    left: 20px;
+}
+#warrior_quests {
+    position: fixed;
+    top: 50px;
+    bottom: 50px;
+    left: 500px;
+}
+#attributes {
+    position: fixed;
+    right: 20px;
+    width: 400px;
+    top: 50px;
+    bottom: 100px;
+    color: #debd8c;
+}
+#attribute_list {
+    background: url("bookRed.png");
+    background-size: cover;
+    border: 10px solid transparent;
+    padding: 15px;
+    border-image: url(border3.png) 16 10 20 repeat;
+}
+.attribute {
+    padding: 10px;
+}
+.attribute_text, .attribute_score {
+    display: inline-block;
+    width: 50%;
+}
+.attribute_score {
+    text-align: right;
+}
+.quest {
+    background-image: url("scroll.png");
+    background-color: black;
+    font-family: Cinzel;
+    box-shadow: 2px 6px 9px 0px rgba(0, 0, 0, 0.4);
+    margin: 0 0 20px 0;
+    border-radius: 5px;
+    padding: 20px;
+    position: relative;
+}
+.quest button {
+    background: url("redArea.png");
+    background-size: cover;
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    padding: 5px 10px;
+    color: #debd8c;
+    font-family: 'Tangerine', cursive;
+    border: none;
+    outline: none;
+    font-size: 20px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+#quest_list {
+    position: fixed;
+    top: 135px;
+    bottom: 75px;
+    overflow-y: scroll;
+    background: rgba(0,0,0,0.75);
+    padding: 30px 20px;
+    box-shadow: 0 -5px 18px 0 rgba(0,0,0, 0.4);
+    border: 10px solid transparent;
+    border-image: url("border3.png") 45 stretch;
+
+}
+#warrior_quest_list {
+    position: fixed;
+    top: 135px;
+    bottom: 50px;
+    overflow-y: scroll;
+}
+.quest.active button {
+    background: black;
+    color: red;
+}
+.quest .cancel_quest {
+    display: none;
+}
+.quest.active .begin_quest {
+    display: none;
+}
+.quest.active .cancel_quest {
+    display: block;
+}
+.quest.failed {
+    background: url("bookRed.png");
+    color: #debd8c;
+}
+
+.quest.failed button{
+    display: none;
+}
