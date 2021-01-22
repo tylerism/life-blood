@@ -6,11 +6,13 @@ function uuidv4() {
 }
 
 class Warrior {
-    constructor (name, gold, weight, xp) {
+    constructor (name, weight, gold, xp, hp, id) {
         this.name = name;
         this.weight = weight;
         this.gold = gold;
         this.xp = xp;
+        this.hp = hp;
+        this.id = id;
     }
 }
 
@@ -60,7 +62,7 @@ class WarriorQuest {
         this.quest.rewards.forEach(r => {
             rewardHtml += r.text || r.gold;
         });
-        return `<div class="quest${this.active ? ' active' : ''}${this.completed === false ? ' failed' : ''}" quest="${this.id}"><h2>${this.quest.text}</h2><div class="duration"><span>Duration: </span> ${this.quest.duration}</div><div class="reward"><span>Reward: </span>${rewardHtml}</div><span>${this.startDate.toString()}</span><button class="begin_quest">Begin</button><button class="cancel_quest">Cancel</button></div></div>`;
+        return `<div class="warrior_quest quest${this.active ? ' active' : ''}${this.completed === false ? ' failed' : ''}" quest="${this.id}"><h2>${this.quest.text}</h2><div class="duration"><span>Duration: </span> ${this.quest.duration}</div><div class="reward"><span>Reward: </span>${rewardHtml}</div><span>${this.startDate.toString()}</span><button class="begin_quest">Begin</button><button class="cancel_quest">Cancel</button></div></div>`;
     }
 }
 
@@ -81,7 +83,57 @@ class WarriorAttribute {
         this.score = score;
     }
     toHTML() {
-        return `<div class="attribute"><div class="attribute_text">${this.text}</div><div class="attribute_score">${this.score}</div></div>`;
+        return `<div class="attribute"><div class="attribute_text">${this.attribute.text}</div><div class="attribute_score">${this.score}</div></div>`;
     }
 }
 
+class WarriorStatusLog {
+    constructor (warrior, warriorQuests, warriorAttributes, timestamp = new Date()) {
+        this.warrior = warrior;
+        this.warriorQuests = warriorQuests;
+        this.warriorAttributes = warriorAttributes;
+        this.timestamp = timestamp;
+    } 
+}
+
+class TimingFunctions {
+    static dailyLogCheck() {
+
+        db.collection("warrior_status_log").orderBy("timestamp", "desc").limit(1).get().then((querySnapshot) => {
+            let addLog = false;
+            let lastLog;
+            if (querySnapshot.size > 0) {
+                querySnapshot.forEach(item => {
+                    console.log(item.data());
+                    lastLog = item.data();
+                })
+                const current = new Date().valueOf();
+                const lastTime = new Date(lastLog.timestamp).valueOf();
+                console.log(current, lastTime, (Number(lastTime) + 86400000) < current);
+                if ((Number(lastTime) + 86400000) < current) {
+                    addLog = true;
+                }
+                if (lastLog.warrior.hp == warrior.hp) {
+                    console.log(warrior.id);
+                    db.collection("warriors").doc(warrior.id).update({
+                        hp: (Number(warrior.hp) - 10)
+                    })
+                    .then(function() {
+                        console.log("Document successfully updated!");
+                    })
+                    .catch(function(error) {
+                        // The document probably doesn't exist.
+                        console.error("Error updating document: ", error);
+                    });
+                }
+            } else {
+                addLog = true;
+            }
+            if (addLog) {
+                const warriorStatusLog = new WarriorStatusLog(warrior, warriorQuests, warriorAttributes);
+                const wsl = JSON.parse(JSON.stringify(warriorStatusLog));
+                db.collection("warrior_status_log").add(wsl);
+            }
+        });
+    }
+}

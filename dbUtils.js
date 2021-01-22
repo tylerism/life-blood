@@ -19,7 +19,7 @@ let rewards = [];
 let goldRewards = [];
 let textRewards = [];
 let warriorQuests = [];
-
+let warriorAttributes = [];
 // var questConverter = {
 // 	toFirestore: function(quest) {
 // 		return {
@@ -35,13 +35,41 @@ let warriorQuests = [];
 // 		return new Quest(data.id, data.text, data.duration, data.rewards, data.active);
 // 	}
 // };
+function seedDatabase () {
+    seedItems(seedQuests, "quests");
+    seedItems(seedRewards, "rewards");
+    seedItems(seedAttributes, "attributes");
+    seedItems(seedWarriors, "warriors");
+    seedWarriors.forEach(warrior => {
+        seedAttributes.forEach(attr => {
+            const wa = new WarriorAttribute(warrior, attr, 0);
+            db.collection("warrior_attributes").add(JSON.parse(JSON.stringify(wa)));
+        })
+    })
+}
 
-function populateData() {
+function seedItems (items, collection) {
+    items.forEach(i => {
+        db.collection(collection).add(JSON.parse(JSON.stringify(i)))
+            .then(function(docRef) {
+                console.log("Document written with ID: ", docRef.id);
+            })
+            .catch(function(error) {
+                console.error("Error adding document: ", error);
+            });
+    });
+}
+
+function populateLocalDataFromDB() {
 
     db.collection("warriors").get().then((querySnapshot) => {
         querySnapshot.forEach((w) => {
-            warrior = w.data();
+            war = w.data();
+            warrior = new Warrior(war.name, war.weight, war.gold, war.xp, war.hp, w.id)
         });
+        console.log(warrior);
+        buildUserBar();
+        TimingFunctions.dailyLogCheck();
     });
 
     // db.collection("warrior_quests").get().then((querySnapshot) => {
@@ -84,14 +112,14 @@ db.collection("quests").onSnapshot(function(querySnapshot) {
     buildQuests();
 });
 
-db.collection("attributes").onSnapshot(function(querySnapshot) {
-    attributes = [];
-    querySnapshot.forEach((attr) => {
-        const a = attr.data();
-        attributes.push(new Attribute(a.text, a.score, attr.id))
-    });
-    buildAttributes();
-});
+// db.collection("attributes").onSnapshot(function(querySnapshot) {
+//     attributes = [];
+//     querySnapshot.forEach((attr) => {
+//         const a = attr.data();
+//         attributes.push(new Attribute(a.text, a.score, attr.id))
+//     });
+//     buildAttributes();
+// });
 
 db.collection("warrior_quests").onSnapshot(function(querySnapshot) {
     warriorQuests = [];
@@ -100,4 +128,13 @@ db.collection("warrior_quests").onSnapshot(function(querySnapshot) {
         warriorQuests.push(new WarriorQuest(q.warrior, q.quest, q.active, q.completed, q.startDate, quest.id))
     });
     buildWarriorQuests();
+});
+
+db.collection("warrior_attributes").onSnapshot(function(querySnapshot) {
+    warriorAttributes = [];
+    querySnapshot.forEach((attr) => {
+        const a = attr.data();
+        warriorAttributes.push(new WarriorAttribute(a.warrior, a.attribute, a.score));
+    });
+    buildWarriorAttributes();
 });

@@ -77,4 +77,5 @@ const seedQuests = [
     new Quest('Blogging', '10 days', [seedRewards[3]]),
     new Quest('Reading technical articles', '10 days', [seedRewards[2]]),
     new Quest('Reading technical articles', '1 month', [seedRewards[3]]),
+    new Quest('Doing dishes once', 'Immediate', [seedRewards[3]]),
 ];

@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link rel="icon" type="image/png" href="/favicon.png"/>
-		<link rel="icon" type="image/png" href="https://example.com/favicon.png"/>
+		<link rel="icon" type="image/png" href="favicon.png"/>
 		<link rel="preconnect" href="https://fonts.gstatic.com">
 		<link href="https://fonts.googleapis.com/css2?family=Charm:wght@400;700&family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.gstatic.com">
@@ -19,21 +18,26 @@
 		<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-app.js"></script>
 		<script src="https://www.gstatic.com/firebasejs/8.2.3/firebase-firestore.js"></script>
+		<script src="moment.js"></script>
+		<script src="uiUtils.js"></script>
 		<script src="dbUtils.js"></script>
 		<script src="classes.js"></script>
 		<script src="seedData.js"></script>
 
 		<script>
-			populateData();
+
+			populateLocalDataFromDB();
 
 		</script>
 
 	</head>
 	<body>
 		<div id="top_bar"></div>
+		<div id="life_blood_logo"><img src="lifeBlood.png"/></div>
 		<div id="warrior_quests"><div id="warrior_quest_list"></div></div>
 		<div id="quests"><div id="quest_label">Quests</div><div id="quest_list"></div></div>
 		<div id="attributes"><div id="attributes_label">Attributes</div><div id="attribute_list"></div></div>
+		<div id="warrior_status"><div id="health_bar"><div id="health_amount"></div></div></div>
 		<div id="bottom_bar"></div>
 		<div id="new_quest_form">
 			<form>
@@ -41,6 +45,7 @@
 				<input type="text" name="duration" placeholder="Duration" />
 				<select name="rewards" id="quest_gold_rewards_select">
 				</select>
+				<div class="tac">OR</div>
 				<select name="rewards" id="quest_text_rewards_select">
 				</select>
 				<input type="submit" value="submit quest"/>
@@ -51,65 +56,6 @@
 		  Your browser does not support the audio tag.
 		</audio>
 		<script>
-
-			function buildQuests () {
-				let questHtml = "";
-				quests.forEach(q => {
-					questHtml += q.toHTML();
-				});
-				document.getElementById('quest_list').innerHTML = questHtml;
-			}
-
-			function buildWarriorQuests () {
-				let questHtml = "";
-				warriorQuests.forEach(q => {
-					questHtml += q.toHTML();
-				});
-				document.getElementById('warrior_quest_list').innerHTML = questHtml;
-			}
-
-			function buildAttributes () {
-				let attributesHtml = "";
-				attributes.forEach(a => {
-					attributesHtml += a.toHTML();
-				});
-				document.getElementById('attribute_list').innerHTML = attributesHtml;
-			}
-
-			function buildGoldRewards () {
-				let rewardsHtml = `<option selected="true" disabled="disabled">Choose gold reward</option>`;
-				goldRewards.forEach(r => {
-					rewardsHtml += `<option value="${r.gold}">${r.gold} gold</option>`;
-				});
-				document.getElementById('quest_gold_rewards_select').innerHTML = rewardsHtml;
-			}
-
-			function buildTextRewards () {
-				let rewardsHtml = `<option selected="true" disabled="disabled">Choose text reward</option>`;
-				textRewards.forEach(r => {
-					rewardsHtml += `<option value="${r.text}">${r.text}</option>`;
-				});
-				document.getElementById('quest_text_rewards_select').innerHTML = rewardsHtml;
-			}
-
-			function seedDatabase () {
-				seedItems(seedQuests, "quests");
-				seedItems(seedRewards, "rewards");
-				seedItems(seedAttributes, "attributes");
-				seedItems(seedWarriors, "warriors");
-			}
-
-			function seedItems (items, collection) {
-				items.forEach(i => {
-					db.collection(collection).add(JSON.parse(JSON.stringify(i)))
-					.then(function(docRef) {
-						console.log("Document written with ID: ", docRef.id);
-					})
-					.catch(function(error) {
-						console.error("Error adding document: ", error);
-					});
-				});
-			}
 
 			$(document).on('click', '.begin_quest', function(){
 				const quest = quests.find(q => q.id === $(this).parent().attr('quest'));
@@ -136,19 +82,21 @@
 
 			const music = document.getElementById("background_music");
 			document.addEventListener("click", function () {
-				//music.play();
+				music.play();
 			});
 
 
 			db.collection("quests").get().then((querySnapshot) => {
 				if (querySnapshot.size === 0) {
-					alert();
-					seedDatabase();
+					const q = confirm("You sure you wanna fuck up the db?");
+					if (q == true) {
+						seedDatabase();
+					}
 				}
 			});
 
 			$('#quest_label').click(function () {
-
+				$('#new_quest_form').fadeIn();
 			});
 
 			$('#new_quest_form form').submit(function(e) {
@@ -167,6 +115,7 @@
 				quest = new Quest(text, duration, [questReward], []);
 				console.log(quest);
 				db.collection("quests").add(JSON.parse(JSON.stringify(quest)));
+				$('#new_quest_form').fadeOut();
 			})
 
 			var backgrounds = [
@@ -182,7 +131,7 @@
 			];
 
 			var back = backgrounds[Math.floor(Math.random()*backgrounds.length)];
-			document.body.style.backgroundImage = `url("${back}")`;
+			document.body.style.backgroundImage = `url("back6.jpg")`;
 
 		</script>
 	</body>
