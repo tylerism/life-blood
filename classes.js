@@ -5,6 +5,8 @@ function uuidv4() {
     });
 }
 
+const MotivatorType = Object.freeze({ GOLD: "GOLD", HP: "HP", XP: "XP", TEXT: "TEXT", ATTRIBUTE: "ATTRIBUTE"});
+
 class Warrior {
     constructor (name, weight, gold, xp, hp, id) {
         this.name = name;
@@ -17,17 +19,16 @@ class Warrior {
 }
 
 class Reward {
-    constructor (text, gold, id) {
-        this.text = text;
-        this.gold = gold;
-        this.id = id;
+    constructor (type, value) {
+        this.type = type;
+        this.value = value;
     }
 }
 
 class Punishment {
-    constructor (text, gold) {
-        this.text = text;
-        this.gold = gold;
+    constructor (type, value) {
+        this.type = type;
+        this.value = value;
     }
 }
 
@@ -42,7 +43,7 @@ class Quest {
     toHTML() {
         let rewardHtml = "";
         this.rewards.forEach(r => {
-            rewardHtml += r.text || r.gold;
+            rewardHtml += `<span class="reward">${r.value} ${r.type}</span>`;
         });
         return `<div class="quest${this.active ? ' active' : ''}" quest="${this.id}"><h2>${this.text}</h2><div class="duration"><span>Duration: </span> ${this.duration}</div><div class="reward"><span>Reward: </span>${rewardHtml}</div><button class="begin_quest">Begin</button><button class="cancel_quest">Cancel</button></div></div>`;
     }
@@ -60,9 +61,9 @@ class WarriorQuest {
     toHTML() {
         let rewardHtml = "";
         this.quest.rewards.forEach(r => {
-            rewardHtml += r.text || r.gold;
+            rewardHtml += `<span class="reward">${r.value} ${r.type}</span>`;
         });
-        return `<div class="warrior_quest quest${this.active ? ' active' : ''}${this.completed === false ? ' failed' : ''}" quest="${this.id}"><h2>${this.quest.text}</h2><div class="duration"><span>Duration: </span> ${this.quest.duration}</div><div class="reward"><span>Reward: </span>${rewardHtml}</div><span>${this.startDate.toString()}</span><button class="begin_quest">Begin</button><button class="cancel_quest">Cancel</button></div></div>`;
+        return `<div class="warrior_quest quest${this.active ? ' active' : ''}${this.completed === false ? ' failed' : ''}" quest="${this.id}"><h2>${this.quest.text}</h2><div class="duration"><span>Duration: </span> ${this.quest.duration}</div><div class="reward"><span>Reward: </span>${rewardHtml}</div><span>${moment(this.startDate)}</span><button class="begin_quest">Begin</button><div class="warrior_quest_actions"><button class="complete_quest">Complete</button><button class="cancel_quest">Cancel <img src="xIcon.png"/></button></div></div></div>`;
     }
 }
 

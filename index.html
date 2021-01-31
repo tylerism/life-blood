@@ -26,28 +26,42 @@
 
 		<script>
 
-			populateLocalDataFromDB();
+			$(document).ready(function () {
+				populateLocalDataFromDB();
+				populateMotivatorTypes();
+			});
 
 		</script>
 
 	</head>
 	<body>
-		<div id="top_bar"></div>
+		<div id="top_bar"><div id="gold_count"><img src="gold.png"/> 100</div></div>
 		<div id="life_blood_logo"><img src="lifeBlood.png"/></div>
 		<div id="warrior_quests"><div id="warrior_quest_list"></div></div>
 		<div id="quests"><div id="quest_label">Quests</div><div id="quest_list"></div></div>
 		<div id="attributes"><div id="attributes_label">Attributes</div><div id="attribute_list"></div></div>
 		<div id="warrior_status"><div id="health_bar"><div id="health_amount"></div></div></div>
-		<div id="bottom_bar"></div>
+		<div id="bottom_bar">
+
+		</div>
 		<div id="new_quest_form">
 			<form>
 				<input type="text" name="text" placeholder="Quest description" />
 				<input type="text" name="duration" placeholder="Duration" />
-				<select name="rewards" id="quest_gold_rewards_select">
+				<select name="rewards" id="quest_rewards_type_select">
 				</select>
-				<div class="tac">OR</div>
-				<select name="rewards" id="quest_text_rewards_select">
+				<input type="text" name="quest_reward_value" placeholder="Reward value" />
+				<div id="quest_attribute_reward">
+					<select id="quest_reward_attribute_type">
+					</select>
+				</div>
+				<select name="punishment" id="quest_punishment_type_select">
 				</select>
+				<input type="text" name="quest_punishment_value" placeholder="Punishment value" />
+				<div id="quest_attribute_punishment">
+					<select id="quest_punishment_attribute_type">
+					</select>
+				</div>
 				<input type="submit" value="submit quest"/>
 			</form>
 		</div>
@@ -65,19 +79,28 @@
 			});
 
 			$(document).on('click', '.cancel_quest', function(){
-				const quest = warriorQuests.find(q => q.id === $(this).parent().attr('quest'));
+				const quest = warriorQuests.find(q => q.id === $(this).parent().parent().attr('quest'));
 				console.log(quest);
 				db.collection("warrior_quests").doc(quest.id).update({
 					completed: false,
 					active: false
 				})
-				.then(function() {
-					console.log("Document successfully updated!");
-				})
-				.catch(function(error) {
-					// The document probably doesn't exist.
-					console.error("Error updating document: ", error);
-				});
+			});
+
+			$(document).on('change', '#quest_rewards_type_select', function (e) {
+				if (e.target.value == MotivatorType.ATTRIBUTE) {
+					$('#quest_attribute_reward').show();
+				} else {
+					$('#quest_attribute_reward').hide();
+				}
+			});
+
+			$(document).on('change', '#quest_punishment_type_select', function (e) {
+				if (e.target.value == MotivatorType.ATTRIBUTE) {
+					$('#quest_attribute_punishment').show();
+				} else {
+					$('#quest_attribute_punishment').hide();
+				}
 			});
 
 			const music = document.getElementById("background_music");
@@ -104,15 +127,29 @@
 				const forms = $(this);
 				const text = forms[0][0].value;
 				const duration = forms[0][1].value;
-				const goldReward = forms[0][2].value;
-				const textReward = forms[0][3].value;
+				const rewardType = forms[0][2].value;
+				const rewardValue = forms[0][3].value;
+				const punishmentType = forms[0][4].value;
+				const punishmentValue = forms[0][5].value;
 				let questReward;
-				if (goldReward) {
-					questReward = new Reward(null, goldReward);
+				let questPunishment;
+
+				const attributeReward = $('#quest_reward_attribute_type').val();
+				const attributePunishment = $('#quest_punishment_attribute_type').val();
+
+				if (rewardType == MotivatorType.ATTRIBUTE || punishmentType == MotivatorType.ATTRIBUTE ) {
+					if (attributeReward) {
+						questReward = new Reward(MotivatorType.ATTRIBUTE, {attribute: attributeReward, value:rewardValue})
+					}
+					if (attributePunishment) {
+						questPunishment = new Reward(MotivatorType.ATTRIBUTE, {attribute: attributeReward, value:rewardValue})
+					}
 				} else {
-					questReward = new Reward(textReward, null);
+					questReward = new Reward(rewardType, rewardValue);
+					questPunishment = new Punishment(punishmentType, punishmentValue);
 				}
-				quest = new Quest(text, duration, [questReward], []);
+
+				quest = new Quest(text, duration, [questReward], [questPunishment]);
 				console.log(quest);
 				db.collection("quests").add(JSON.parse(JSON.stringify(quest)));
 				$('#new_quest_form').fadeOut();

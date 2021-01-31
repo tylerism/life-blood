@@ -87,20 +87,20 @@ function populateLocalDataFromDB() {
     //     });
     //     buildAttributes();
     // });
-
-    db.collection("rewards").get().then((querySnapshot) => {
-        querySnapshot.forEach((reward) => {
-            const r = reward.data();
-            rewards.push(new Reward(r.text, r.gold, reward.id));
-            if (r.gold) {
-                goldRewards.push(new Reward(r.text, r.gold, reward.id));
-            } else {
-                textRewards.push(new Reward(r.text, r.gold, reward.id));
-            }
-        });
-        buildGoldRewards();
-        buildTextRewards();
-    });
+    //
+    // db.collection("rewards").get().then((querySnapshot) => {
+    //     querySnapshot.forEach((reward) => {
+    //         const r = reward.data();
+    //         rewards.push(new Reward(r.text, r.gold, reward.id));
+    //         if (r.gold) {
+    //             goldRewards.push(new Reward(r.text, r.gold, reward.id));
+    //         } else {
+    //             textRewards.push(new Reward(r.text, r.gold, reward.id));
+    //         }
+    //     });
+    //     buildGoldRewards();
+    //     buildTextRewards();
+    // });
 }
 
 db.collection("quests").onSnapshot(function(querySnapshot) {
@@ -111,15 +111,6 @@ db.collection("quests").onSnapshot(function(querySnapshot) {
     });
     buildQuests();
 });
-
-// db.collection("attributes").onSnapshot(function(querySnapshot) {
-//     attributes = [];
-//     querySnapshot.forEach((attr) => {
-//         const a = attr.data();
-//         attributes.push(new Attribute(a.text, a.score, attr.id))
-//     });
-//     buildAttributes();
-// });
 
 db.collection("warrior_quests").onSnapshot(function(querySnapshot) {
     warriorQuests = [];
@@ -137,4 +128,5 @@ db.collection("warrior_attributes").onSnapshot(function(querySnapshot) {
         warriorAttributes.push(new WarriorAttribute(a.warrior, a.attribute, a.score));
     });
     buildWarriorAttributes();
+    buildWarriorQuestAttributeSelectList();
 });

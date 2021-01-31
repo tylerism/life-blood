@@ -30,22 +30,26 @@ function buildWarriorAttributes () {
     document.getElementById('attribute_list').innerHTML = attributesHtml;
 }
 
-function buildGoldRewards () {
-    let rewardsHtml = `<option selected="true" disabled="disabled">Choose gold reward</option>`;
-    goldRewards.forEach(r => {
-        rewardsHtml += `<option value="${r.gold}">${r.gold} gold</option>`;
-    });
-    document.getElementById('quest_gold_rewards_select').innerHTML = rewardsHtml;
-}
-
-function buildTextRewards () {
-    let rewardsHtml = `<option selected="true" disabled="disabled">Choose text reward</option>`;
-    textRewards.forEach(r => {
-        rewardsHtml += `<option value="${r.text}">${r.text}</option>`;
-    });
-    document.getElementById('quest_text_rewards_select').innerHTML = rewardsHtml;
-}
-
 function buildUserBar () {
     document.getElementById('health_amount').style.width = warrior.hp + '%';
+}
+
+function populateMotivatorTypes () {
+    const types = Object.keys(MotivatorType);
+    let motivatorHTML = "";
+    types.forEach(r => {
+        motivatorHTML += `<option value="${r}">${r}</option>`;
+    });
+    console.log('hi', motivatorHTML, types);
+    document.getElementById('quest_rewards_type_select').innerHTML = `<option selected="true" disabled="disabled">Choose reward type</option>` + motivatorHTML;
+    document.getElementById('quest_punishment_type_select').innerHTML = `<option selected="true" disabled="disabled">Choose punishment type</option>` + motivatorHTML;
+}
+
+function buildWarriorQuestAttributeSelectList () {
+    let warriorAttributesHTML = "";
+    warriorAttributes.forEach(r => {
+        warriorAttributesHTML += `<option value="${r.attribute.text}">${r.attribute.text}</option>`;
+    });
+    document.getElementById('quest_reward_attribute_type').innerHTML = `<option selected="true" disabled="disabled">Choose attribute type</option>` + warriorAttributesHTML;
+    document.getElementById('quest_punishment_attribute_type').innerHTML = `<option selected="true" disabled="disabled">Choose attribute type</option>` + warriorAttributesHTML;
 }

@@ -1,5 +1,5 @@
 const seedWarriors = [
-    new Warrior('Lord Pugh', 0, 217, 0)
+    new Warrior('Lord Pugh', 0, 217, 0, 100)
 ]
 
 const seedAttributes = [
@@ -19,16 +19,16 @@ const seedAttributes = [
     new Attribute('Wealth')
 ];
 const seedRewards = [
-    new Reward(null, '25'),
-    new Reward(null,'50'),
-    new Reward(null,'100'),
-    new Reward(null,'1000'),
-    new Reward('Take a vacation', 0),
-    new Reward('Buy new warddrobe', 0),
-    new Reward('Invite friends over for dinner', 0),
-    new Reward('Order expensive fancy meal', 0),
-    new Reward('Join dating app', 0),
-    new Reward('A new plant', 0)
+    new Reward(MotivatorType.GOLD, '25'),
+    new Reward(MotivatorType.GOLD,' 50'),
+    new Reward(MotivatorType.GOLD, '100'),
+    new Reward(MotivatorType.GOLD, '1000'),
+    new Reward(MotivatorType.TEXT, 'Take a vacation'),
+    new Reward(MotivatorType.TEXT, 'Buy new warddrobe'),
+    new Reward(MotivatorType.TEXT, 'Invite friends over for dinner'),
+    new Reward(MotivatorType.TEXT, 'Order expensive fancy meal'),
+    new Reward(MotivatorType.TEXT, 'Join dating app'),
+    new Reward(MotivatorType.TEXT, 'A new plant')
 ];
 const seedQuests = [
     new Quest('Make bed everyday', '10 days', [seedRewards[0]]),
