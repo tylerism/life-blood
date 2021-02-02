@@ -62,15 +62,15 @@ function seedItems (items, collection) {
 
 function populateLocalDataFromDB() {
 
-    db.collection("warriors").get().then((querySnapshot) => {
-        querySnapshot.forEach((w) => {
-            war = w.data();
-            warrior = new Warrior(war.name, war.weight, war.gold, war.xp, war.hp, w.id)
-        });
-        console.log(warrior);
-        buildUserBar();
-        TimingFunctions.dailyLogCheck();
-    });
+    // db.collection("warriors").get().then((querySnapshot) => {
+    //     querySnapshot.forEach((w) => {
+    //         war = w.data();
+    //         warrior = new Warrior(war.name, war.weight, war.gold, war.xp, war.hp, w.id)
+    //     });
+    //     console.log(warrior);
+    //     buildUserBar();
+    //     TimingFunctions.dailyLogCheck();
+    // });
 
     // db.collection("warrior_quests").get().then((querySnapshot) => {
     //     querySnapshot.forEach((quest) => {
@@ -103,16 +103,26 @@ function populateLocalDataFromDB() {
     // });
 }
 
+db.collection("warriors").onSnapshot(function(querySnapshot) {
+    querySnapshot.forEach((w) => {
+        war = w.data();
+        warrior = new Warrior(war.name, war.weight, war.gold, war.xp, war.hp, w.id)
+    });
+    buildUserBar();
+    buildGold();
+    TimingFunctions.dailyLogCheck();
+});
+
 db.collection("quests").onSnapshot(function(querySnapshot) {
     quests = [];
     querySnapshot.forEach((quest) => {
         const q = quest.data();
-        quests.push(new Quest(q.text, q.duration, q.rewards, q.active, quest.id))
+        quests.push(new Quest(q.text, q.duration, q.rewards, q.punishments, quest.id))
     });
     buildQuests();
 });
 
-db.collection("warrior_quests").onSnapshot(function(querySnapshot) {
+db.collection("warrior_quests").orderBy("startDate", "desc").onSnapshot(function(querySnapshot) {
     warriorQuests = [];
     querySnapshot.forEach((quest) => {
         const q = quest.data();
@@ -125,7 +135,7 @@ db.collection("warrior_attributes").onSnapshot(function(querySnapshot) {
     warriorAttributes = [];
     querySnapshot.forEach((attr) => {
         const a = attr.data();
-        warriorAttributes.push(new WarriorAttribute(a.warrior, a.attribute, a.score));
+        warriorAttributes.push(new WarriorAttribute(a.warrior, a.attribute, a.score, attr.id));
     });
     buildWarriorAttributes();
     buildWarriorQuestAttributeSelectList();

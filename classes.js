@@ -78,10 +78,11 @@ class Attribute {
 }
 
 class WarriorAttribute {
-    constructor (warrior, attribute, score) {
+    constructor (warrior, attribute, score, id) {
         this.warrior = warrior;
         this.attribute = attribute;
         this.score = score;
+        this.id = id;
     }
     toHTML() {
         return `<div class="attribute"><div class="attribute_text">${this.attribute.text}</div><div class="attribute_score">${this.score}</div></div>`;

@@ -222,6 +222,13 @@ h1, h2, h3 {
     box-shadow: 0 3px 14px black;
 }
 
+#myface {
+    position: absolute;
+    right: 230px;
+    top: -10px;
+    width: 78px;
+}
+
 .tac {
     text-align: center;
 }

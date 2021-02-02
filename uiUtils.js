@@ -22,6 +22,11 @@ function buildAttributes () {
     document.getElementById('attribute_list').innerHTML = attributesHtml;
 }
 
+function buildGold () {
+    const goldCountHtml = warrior.gold;
+    document.getElementById('gold_count_amount').innerHTML = goldCountHtml;
+}
+
 function buildWarriorAttributes () {
     let attributesHtml = "";
     warriorAttributes.forEach(a => {

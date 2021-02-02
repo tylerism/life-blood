@@ -35,12 +35,12 @@
 
 	</head>
 	<body>
-		<div id="top_bar"><div id="gold_count"><img src="gold.png"/> 100</div></div>
+	<div id="top_bar"><div id="gold_count"><img src="gold.png"/><span id="gold_count_amount">100</span></div></div>
 		<div id="life_blood_logo"><img src="lifeBlood.png"/></div>
 		<div id="warrior_quests"><div id="warrior_quest_list"></div></div>
 		<div id="quests"><div id="quest_label">Quests</div><div id="quest_list"></div></div>
 		<div id="attributes"><div id="attributes_label">Attributes</div><div id="attribute_list"></div></div>
-		<div id="warrior_status"><div id="health_bar"><div id="health_amount"></div></div></div>
+		<div id="warrior_status"><div id="health_bar"><img src="face.png" id="myface"/><div id="health_amount"></div></div></div>
 		<div id="bottom_bar">
 
 		</div>
@@ -73,18 +73,75 @@
 
 			$(document).on('click', '.begin_quest', function(){
 				const quest = quests.find(q => q.id === $(this).parent().attr('quest'));
+				console.log('ersrgfd', quest);
 				const warriorQuest = new WarriorQuest(warrior, quest, true, null, new Date());
 				const wq = JSON.parse(JSON.stringify(warriorQuest));
 				db.collection("warrior_quests").add(wq);
 			});
 
 			$(document).on('click', '.cancel_quest', function(){
-				const quest = warriorQuests.find(q => q.id === $(this).parent().parent().attr('quest'));
-				console.log(quest);
-				db.collection("warrior_quests").doc(quest.id).update({
-					completed: false,
+				const wq = warriorQuests.find(q => q.id === $(this).parent().parent().attr('quest'));
+				const goldPunishments = wq.quest.punishments && wq.quest.punishments.filter(item => item.type =="GOLD");
+				const attributePunishments = wq.quest.punishments && wq.quest.punishments.filter(item => item.type =="ATTRIBUTE");
+				let totalGoldPunishment = 0;
+				goldPunishments.forEach(item => {
+					totalGoldPunishment += Number(item.value);
+				});
+				console.log(attributePunishments);
+
+				attributePunishments.forEach(attributePunishment => {
+					console.log('sdfsfsdf',attributePunishment, warriorAttributes);
+					warriorAttributes.forEach(warriorAttribute => {
+						console.log(warriorAttribute.attribute.text, attributePunishment.text)
+						if (warriorAttribute.attribute.text == attributePunishment.value.text) {
+							warriorAttribute.score -= attributePunishment.value.value;
+							console.log(warriorAttribute.attribute.type == attributePunishment.text);
+							db.collection("warrior_attributes").doc(warriorAttribute.id).update(JSON.parse(JSON.stringify(warriorAttribute)));
+						}
+					})
+				});
+				if (totalGoldPunishment) {
+					warrior.gold -= Number(totalGoldPunishment);
+					db.collection("warrior_quests").doc(wq.id).update({
+						completed: false,
+						active: false
+					});
+					db.collection("warriors").doc(warrior.id).update(JSON.parse(JSON.stringify(warrior)));
+				}
+			});
+
+			$(document).on('click', '.complete_quest', function(){
+				const wq = warriorQuests.find(q => q.id === $(this).parent().parent().attr('quest'));
+				const goldRewards = wq.quest.rewards && wq.quest.rewards.filter(item => item.type =="GOLD");
+				const attributeRewards = wq.quest.rewards && wq.quest.rewards.filter(item => item.type =="ATTRIBUTE");
+				let totalGoldReward = 0;
+				goldRewards.forEach(item => {
+					totalGoldReward += Number(item.value);
+				});
+
+				attributeRewards.forEach(attributeReward => {
+					console.log('sdfsfsdf',attributeReward, warriorAttributes);
+					warriorAttributes.forEach(warriorAttribute => {
+						console.log(warriorAttribute.attribute.text, attributeReward.text)
+						if (warriorAttribute.attribute.text == attributeReward.value.text) {
+							warriorAttribute.score += attributeReward.value.value;
+							console.log(warriorAttribute.attribute.type == attributeReward.text);
+							db.collection("warrior_attributes").doc(warriorAttribute.id).update(JSON.parse(JSON.stringify(warriorAttribute)));
+						}
+					})
+				});
+
+
+
+				if (totalGoldReward) {
+					warrior.gold += Number(totalGoldReward);
+					db.collection("warriors").doc(warrior.id).update(JSON.parse(JSON.stringify(warrior)));
+				}
+				db.collection("warrior_quests").doc(wq.id).update({
+					completed: true,
 					active: false
-				})
+				});
+
 			});
 
 			$(document).on('change', '#quest_rewards_type_select', function (e) {
